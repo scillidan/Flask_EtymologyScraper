@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
-
+from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import re
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 def get_oldest_etymology(word):
     url = f"https://www.etymonline.com/word/{word}"
@@ -41,8 +42,6 @@ def get_oldest_etymology(word):
 
 @app.route('/org', methods=['GET'])
 def word_origin():
-
-
     word = request.args.get("word", "").strip().lower()
     if not word:
         return jsonify({"error": "Please provide a word."}), 400
@@ -52,5 +51,5 @@ def word_origin():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
