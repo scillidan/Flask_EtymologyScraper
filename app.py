@@ -19,7 +19,7 @@ def get_oldest_etymology(word):
     soup = BeautifulSoup(response.text, "html.parser")
 
 
-    etymology_section = soup.find("section", class_="word__defination--2q7ZH")
+    etymology_section = soup.find("section", class_="word__defination--2q7ZH")#this is where its stored on etmyonline
 
     if etymology_section:
         full_etymology = etymology_section.get_text(strip=True)
@@ -36,7 +36,7 @@ def get_oldest_etymology(word):
         if second_oldest_match:
             return f"{second_oldest_match.group(1)}"
 
-        return full_etymology
+        return ("Old English") # typo or not registered, were presuming english either way
 
     return "No etymology found for this word."
 
@@ -45,6 +45,13 @@ def word_origin():
     word = request.args.get("word", "").strip().lower()
     if not word:
         return jsonify({"error": "Please provide a word."}), 400
+
+
+    #etmyonline does not have coverage on some things we just cant track, so its easier to presume there are english
+    if word == 'a' or word== 'an' or word=='my' or word==',' or word == '.':
+        return jsonify({"word": word, "oldest_origin": "Old English"})
+
+
 
     origin = get_oldest_etymology(word)
     return jsonify({"word": word, "oldest_origin": origin})
